@@ -5,7 +5,7 @@ export default defineConfig({
   root: "app/javascript",
   base: "/",
   build: {
-    outDir: "../../app/builds",
+    outDir: "../../app/build",
     emptyOutDir: true,
     rollupOptions: {
       input: {
