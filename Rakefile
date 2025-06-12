@@ -4,12 +4,14 @@ task :default do
   sh "rake -T"
 end
 
-desc "Run Jekyll and Tailwind CSS --watch" 
+desc "Run Jekyll, Vite and Tailwind CSS --watch" 
 task :dev do
   jekyll_pid = spawn("bundle exec jekyll serve")
+  vite_pid = spawn("npx vite")
   tailwind_pid = spawn("npx @tailwindcss/cli -i ./app/assets/stylesheets/tailwind-input.css -o ./app/assets/stylesheets/tailwind-output.css --watch")
 
   Process.wait(jekyll_pid)
+  Process.wait(vite_pid)
   Process.wait(tailwind_pid)
 end
 
@@ -34,7 +36,7 @@ task :stimulus, [:name] do |t, args|
 
   unless File.exist?(file_path)
     File.write(file_path, <<~JS)
-      import { Controller } from "https://unpkg.com/@hotwired/stimulus/dist/stimulus.js"
+      import { Controller } from "@hotwired/stimulus"
 
       export default class #{class_name} extends Controller {
         connect() {
@@ -47,7 +49,6 @@ task :stimulus, [:name] do |t, args|
     puts "File already exists: #{file_path}"
   end
 
-  # Update application.js
   if File.exist?(app_js_path)
     app_js = File.read(app_js_path)
 
@@ -63,6 +64,11 @@ task :stimulus, [:name] do |t, args|
   else
     puts "Could not find #{app_js_path}"
   end
+end
+
+desc "Run Jekyll in production mode"
+task :p do
+  sh "JEKYLL_ENV=production bundle exec jekyll serve"
 end
 
 desc "Run RSpec tests"
